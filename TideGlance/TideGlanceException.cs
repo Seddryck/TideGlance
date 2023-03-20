@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Reflection;
 
-namespace TideGlance
+namespace TideGlance;
+public abstract class TideGlanceException : ApplicationException
 {
-    abstract class TideGlanceException : Exception
-    {
-        public TideGlanceException(string message)
-             : base(message)
-        { }
-    }
+    public TideGlanceException(string message)
+         : base(message)
+    { }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TideGlance;
 
-internal interface ISelection
+internal interface IProjection
 {
     string Name { get; set; }
     object? Execute(object obj);

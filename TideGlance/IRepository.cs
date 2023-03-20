@@ -8,5 +8,5 @@ namespace TideGlance;
 
 internal interface IRepository
 {
-    void Merge(IDictionary<string, object?> dico);
+    void Merge(Record record);
 }
