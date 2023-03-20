@@ -2,4 +2,7 @@
 	<PropertyGroup>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Folder Include="Settings\" />
+	</ItemGroup>
 </Project>
