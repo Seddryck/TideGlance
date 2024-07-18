@@ -9,11 +9,11 @@ internal interface IRecordBuilder
 {
     Record Build();
 }
-internal class RecordBuilder : IRecordBuilder
+internal abstract class RecordBuilder : IRecordBuilder
 {
-    private Structure Structure { get; set; }
-    private List<KeyValuePair<string, object?>> Actions { get; set; } = new List<KeyValuePair<string, object?>>();
-    public RecordBuilder(Structure structure)
+    protected Structure Structure { get; init; }
+    protected List<KeyValuePair<string, object?>> Actions { get; set; } = [];
+    protected RecordBuilder(Structure structure)
         => Structure = structure;
 
     public RecordBuilder WithField(string fieldName, object? value)
@@ -28,15 +28,15 @@ internal class RecordBuilder : IRecordBuilder
         return this;
     }
 
-
-    public Record Build()
+    public abstract Record Build();
+    protected Dictionary<string, object> PreBuild()
     {
-        var record = new Record(Structure);
+        var dico = new Dictionary<string, object>();
         foreach (var action in Actions)
-            if (action.Value == null)
-                record.SetNull(action.Key);
-            else
-                record.SetValue(action.Key, action.Value);
-        return record;
+            if (action.Value is not null)
+                dico.Add(action.Key, action.Value);
+            else if (dico.ContainsKey(action.Key))
+                dico.Remove(action.Key);
+        return dico;
     }
 }

@@ -6,35 +6,29 @@ using System.Threading.Tasks;
 
 namespace TideGlance;
 
-public class StructureException : TideGlanceException
+public class StructureException(string message) : TideGlanceException(message)
 {
-    public StructureException(string message)
-        : base(message) { }
 }
 
-public class IdentityException : StructureException
+public class IdentityException(string fieldName) 
+    : StructureException($"The identity must be defined based on fields which are part of the structure. The field named '{fieldName}' is not part of the structure.")
 {
-    public string FieldName { get; }
-
-    public IdentityException(string fieldName)
-        : base($"The identity must be defined based on fields which are part of the structure. The field named '{fieldName}' is not part of the structure")
-    { FieldName = fieldName; }
+    public string FieldName { get; } = fieldName;
+}
+public class TimestampException(string fieldName) 
+    : StructureException($"The timestamp must be defined based on fields which are part of the structure. The field named '{fieldName}' is not part of the structure.")
+{
+    public string FieldName { get; } = fieldName;
 }
 
-public class NonExistingFieldException : StructureException
+public class NonExistingFieldException(string fieldName) 
+    : StructureException($"The current structure doesn't contain a field named '{fieldName}'")
 {
-    public string FieldName { get; } 
-    
-    public NonExistingFieldException(string fieldName)
-        : base($"The current structure doesn't contain a field named '{fieldName}'")
-    { FieldName = fieldName; }
+    public string FieldName { get; } = fieldName;
 }
 
-public class DuplicateFieldException : StructureException
+public class DuplicateFieldException(string fieldName) 
+    : StructureException($"The current structure already contains a field named '{fieldName}'. You can define two fields with the same name.")
 {
-    public string FieldName { get; }
-
-    public DuplicateFieldException(string fieldName)
-        : base($"The current structure already contains a field named '{fieldName}'. You can define two fields with the same name.")
-    { FieldName = fieldName; }
+    public string FieldName { get; } = fieldName;
 }

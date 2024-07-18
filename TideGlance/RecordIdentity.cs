@@ -6,35 +6,37 @@ using System.Threading.Tasks;
 
 namespace TideGlance;
 
-internal class RecordIdentity
+internal class RecordIdentity : Record
 {
-    private IDictionary<string, object?> Keys { get; } = new Dictionary<string, object?>();
+    public Identity Identity { get; init; }
+    public new StructureIdentity Structure { get => (StructureIdentity)base.Structure; }
 
-    public RecordIdentity(IDictionary<string, object?> keys)
-        => (Keys) = (keys);
+    internal RecordIdentity(StructureIdentity structure, IDictionary<string, object> values)
+        : base(structure, values)
+        => (Identity) = (new Identity(structure.Identity.ToDictionary(x => x, GetValue)));
 
     #region Equality
-    public static bool operator ==(RecordIdentity identity1, RecordIdentity identity2)
+    public static bool operator ==(RecordIdentity record1, RecordIdentity record2)
     {
-        if (ReferenceEquals(identity1, identity2))
+        if (ReferenceEquals(record1, record2))
             return true;
-        if (identity1 is null || identity2 is null)
+        if (record1 is null || record2 is null)
             return false;
-        if (identity1.Keys.Count != identity2.Keys.Count)
+        if (record1.Structure.Identity.Count != record2.Structure.Identity.Count)
             return false;
-        if (identity1.Keys.Keys.Except(identity2.Keys.Keys).Any())
+        if (record1.Structure.Identity.Except(record2.Structure.Identity).Any())
             return false;
 
-        foreach (string fieldName in identity1.Keys.Keys)
+        foreach (string fieldName in record1.Structure.Identity)
         {
-            if (!identity2.Keys.ContainsKey(fieldName) || !identity1.Keys[fieldName]!.Equals(identity2.Keys[fieldName]))
-                return false; 
+            if (!record1.GetValue(fieldName)?.Equals(record2.GetValue(fieldName)) ?? false)
+                return false;
         }
         return true;
     }
 
-    public static bool operator !=(RecordIdentity identity1, RecordIdentity identity2)
-        => !(identity1 == identity2);
+    public static bool operator !=(RecordIdentity record1, RecordIdentity record2)
+        => !(record1 == record2);
 
     public override bool Equals(object? obj)
     {
@@ -49,10 +51,10 @@ internal class RecordIdentity
         unchecked
         {
             int hash = 17;
-            foreach (string fieldName in Keys.Keys)
+            foreach (string fieldName in Structure.Identity)
             {
                 hash = hash * 31 + fieldName.GetHashCode();
-                hash = hash * 43 + (Keys[fieldName] == null ? 0 : Keys[fieldName]!.GetHashCode());
+                hash = hash * 43 + (GetValue(fieldName)?.GetHashCode() ?? 0);
             }
             return hash;
         }

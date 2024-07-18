@@ -21,8 +21,8 @@ public class GlanceTest
 
         var selections = new List<IProjection>() { foo.Object, bar.Object };
 
-        var repository = new Mock<IRepository>();
-        repository.Setup(x => x.Merge(It.IsAny<Record>()));
+        var repository = new Mock<IIdentityRepository>();
+        repository.Setup(x => x.Merge(It.IsAny<RecordIdentity>()));
 
         var target = new object();  
 
@@ -46,13 +46,13 @@ public class GlanceTest
 
         var selections = new List<IProjection>() { foo.Object, bar.Object };
 
-        var repository = new Mock<IRepository>();
-        repository.Setup(x => x.Merge(It.IsAny<Record>()));
+        var repository = new Mock<IIdentityRepository>();
+        repository.Setup(x => x.Merge(It.IsAny<RecordIdentity>()));
 
         var glance = new Glance(selections, repository.Object, "foo");
         glance.Refresh(new object());
 
-        repository.Verify(x => x.Merge(It.Is<Record>(
+        repository.Verify(x => x.Merge(It.Is<RecordIdentity>(
                 x => (string?)x.GetValue("foo") == "fooValue"
                 && (string?)x.GetValue("bar") == "barValue"
             )), Times.Once);

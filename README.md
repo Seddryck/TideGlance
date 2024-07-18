@@ -1,5 +1,5 @@
 # TideGlance
-TideGlance is a lightweight solution to create materialized views on top of messaging or streaming flows.
+TideGlance is a lightweight solution to create materialized views and stream aggregation on top of messaging or streaming flows.
 
 ![Logo](https://raw.githubusercontent.com/Seddryck/TideGlance/main/misc/logo/TideGlance-logo.png)
 

@@ -11,19 +11,19 @@ namespace TideGlance;
 internal class Glance
 {
     ICollection<IProjection> Projections { get; set; }
-    IRepository Repository { get; set; }
-    Structure Structure { get; set; }
+    IIdentityRepository Repository { get; set; }
+    StructureIdentity Structure { get; set; }
 
 
-    public Glance(ICollection<IProjection> projections, IRepository repository, string identity)
+    public Glance(ICollection<IProjection> projections, IIdentityRepository repository, string identity)
         => (Projections,  Repository,  Structure) = (projections, repository
-                , new Structure(projections.Select(x => x.Name).ToArray(), new[] { identity })
+                , new StructureIdentity(projections.Select(x => x.Name).ToArray(), [identity])
             );
 
     public void Refresh(object obj)
     {
         var projections = Projections.Select(x => new { Key = x.Name , Value = x.Execute(obj)}).ToDictionary(y => y.Key, y => y.Value);
-        var record = Structure.Builder.WithDictionary(projections).Build();
+        var record = (RecordIdentity) new RecordIdentityBuilder(Structure).WithDictionary(projections).Build();
         Repository.Merge(record);
     }
 }

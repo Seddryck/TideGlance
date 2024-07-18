@@ -1,50 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TideGlance;
 
-internal class Structure
+internal abstract class Structure
 {
-    public IReadOnlyCollection<string> Identity { get => IdentityFields; }
-    private List<string> IdentityFields { get; set; } = new List<string>();
-    private Dictionary<string, object> Fields { get; set; } = new Dictionary<string, object>();
+    private List<string> Fields { get; set; } = [];
+    public IReadOnlyCollection<string> FieldNames { get => Fields; }
 
-    public Structure(string[] fields, string[] identityFields)
+    public Structure(string[] fields)
     {
         if (fields.GroupBy(x => x).Where(g => g.Count() > 1).Any())
             throw new DuplicateFieldException(fields.GroupBy(x => x).Where(g => g.Count() > 1).First().First());
-
-        if (identityFields.GroupBy(x => x).Where(g => g.Count() > 1).Any())
-            throw new DuplicateFieldException(identityFields.GroupBy(x => x).Where(g => g.Count() > 1).First().First());
-
-        if (identityFields.Except(fields).Any())
-            throw new IdentityException(identityFields.Except(fields).First());
-        IdentityFields = identityFields.ToList();
-        Fields = fields.ToDictionary(x => x, y => new object());
+        Fields = [..fields];
     }
 
     public void Add(string fieldName)
     {
-        if(Fields.ContainsKey(fieldName))
+        if(Fields.Contains(fieldName))
             throw new DuplicateFieldException(fieldName);
-        Fields.Add(fieldName, new object());
+        Fields.Add(fieldName);
+    }
+
+    protected virtual void CheckBeforeRemove(string fieldName)
+    {
+        if (!Fields.Contains(fieldName))
+            throw new NonExistingFieldException(fieldName);
     }
 
     public void Remove(string fieldName)
     {
-        if (!Fields.ContainsKey(fieldName))
-            throw new NonExistingFieldException(fieldName);
-        if (Identity.Contains(fieldName))
-            throw new IdentityException(fieldName);
-
+        CheckBeforeRemove(fieldName);
         Fields.Remove(fieldName);
     }
 
     public bool Contains(string fieldName)
-        => Fields.ContainsKey(fieldName);
-
-    public RecordBuilder Builder { get => new(this); }
+        => Fields.Contains(fieldName);
 }

@@ -6,37 +6,37 @@ using System.Threading.Tasks;
 
 namespace TideGlance.Testing;
 
-public class StructureTest
+public class StructureIdentityTest
 {
     [Test]
     public void Ctor_Valid_Success()
-        => Assert.DoesNotThrow(() => new Structure(new[] { "foo", "bar" }, new[] { "foo" }));
+        => Assert.DoesNotThrow(() => new StructureIdentity(["foo", "bar"], ["foo"]));
 
     [Test]
     public void Ctor_DuplicateFields_Throws()
     {
-        var ex = Assert.Throws<DuplicateFieldException>(() => new Structure(new[] { "foo", "bar", "foo" }, new[] { "foo" }));
+        var ex = Assert.Throws<DuplicateFieldException>(() => new StructureIdentity(["foo", "bar", "foo"], ["foo"]));
         Assert.That(ex.FieldName, Is.EqualTo("foo"));
     }
 
     [Test]
     public void Ctor_DuplicateIdentityFields_Throws()
     {
-        var ex = Assert.Throws<DuplicateFieldException>(() => new Structure(new[] { "foo", "bar" }, new[] { "foo", "foo" }));
+        var ex = Assert.Throws<DuplicateFieldException>(() => new StructureIdentity(["foo", "bar"], ["foo", "foo"]));
         Assert.That(ex.FieldName, Is.EqualTo("foo"));
     }
 
     [Test]
     public void Ctor_IdentityFieldsNotPartOfFields_Throws()
     {
-        var ex = Assert.Throws<IdentityException>(() => new Structure(new[] { "foo", "bar" }, new[] { "foo", "qux" }));
+        var ex = Assert.Throws<IdentityException>(() => new StructureIdentity(["foo", "bar"], ["foo", "qux"]));
         Assert.That(ex.FieldName, Is.EqualTo("qux"));
     }
 
     [Test]
     public void Add_NewField_DoesNotThrow()
     {
-        var structure = new Structure(new[] { "foo", "bar" }, new[] { "foo" });
+        var structure = new StructureIdentity(["foo", "bar"], ["foo"]);
         Assert.DoesNotThrow(() => structure.Add("qux"));
         Assert.That(structure.Contains("qux"), Is.True);
     }
@@ -44,7 +44,7 @@ public class StructureTest
     [Test]
     public void Add_ExistingField_Throws()
     {
-        var structure = new Structure(new[] { "foo", "bar" }, new[] { "foo" });
+        var structure = new StructureIdentity(["foo", "bar"], ["foo"]);
         var ex = Assert.Throws<DuplicateFieldException>(() => structure.Add("foo"));
         Assert.That(ex.FieldName, Is.EqualTo("foo"));
     }
@@ -52,7 +52,7 @@ public class StructureTest
     [Test]
     public void Remove_ExistingField_DoesNotThrow()
     {
-        var structure = new Structure(new[] { "foo", "bar" }, new[] { "foo" });
+        var structure = new StructureIdentity(["foo", "bar"], ["foo"]);
         Assert.DoesNotThrow(() => structure.Remove("bar"));
         Assert.That(structure.Contains("bar"), Is.False);
     }
@@ -60,7 +60,7 @@ public class StructureTest
     [Test]
     public void Remove_NonExistingField_Throws()
     {
-        var structure = new Structure(new[] { "foo", "bar" }, new[] { "foo" });
+        var structure = new StructureIdentity(["foo", "bar"], ["foo"]);
         var ex = Assert.Throws<NonExistingFieldException>(() => structure.Remove("qux"));
         Assert.That(ex.FieldName, Is.EqualTo("qux"));
     }
@@ -68,7 +68,7 @@ public class StructureTest
     [Test]
     public void Remove_IdentityField_Throws()
     {
-        var structure = new Structure(new[] { "foo", "bar" }, new[] { "foo" });
+        var structure = new StructureIdentity(["foo", "bar"], ["foo"]);
         var ex = Assert.Throws<IdentityException>(() => structure.Remove("foo"));
         Assert.That(ex.FieldName, Is.EqualTo("foo"));
     }
